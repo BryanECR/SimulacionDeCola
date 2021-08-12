@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -13,6 +14,7 @@ void menu();
 void agregar();
 void eliminar();
 void mostrar();
+void graficar();
 
 int main(){
     menu();
@@ -23,7 +25,7 @@ void menu(){
     int opcion;
     bool seguir = true;
     while(seguir){
-        cout<<" ******** MENU ******** \n1- Ingresar Informacion\n2- Ver Informacion\n3- Eliminar el primero\n4- Salir\nIngrese el numero de la opcion que desea: ";
+        cout<<" ******** MENU ******** \n1- Ingresar Informacion\n2- Ver Informacion\n3- Eliminar el primero\n4- Graficar\n5- Salir\nIngrese el numero de la opcion que desea: ";
         cin>>opcion;
         switch(opcion){
             case 1:
@@ -41,6 +43,10 @@ void menu(){
                 system("pause");
             break;
             case 4:
+                graficar();
+                system("pause");
+            break;
+            case 5:
                 cout<<"¡HASTA LA PROXIMA!";
                 seguir = false;
             break;
@@ -50,7 +56,6 @@ void menu(){
         system("cls");
     }
 }
-
 
 void agregar(){
     nodo* nuevo = new nodo();
@@ -92,4 +97,41 @@ void mostrar(){
     }else{
         cout<<"la lista esta vacia\n";
     }
+}
+
+void graficar(){
+    nodo* actual = new nodo();
+    actual = inicio;
+    string texto = "";
+    int contador = 0;
+    if(inicio != NULL){
+        while(actual != NULL){
+            texto += "\tnodo"+to_string(contador)+"[shape=box label=\"Nombre: "+actual->nombre+"; Edad: "+to_string(actual->edad)+"\"];\n";
+            actual = actual->siguiente;
+            contador+=1;
+        }
+    }else{
+        cout<<"la lista esta vacia\n";
+    }
+
+    for(int i = 0; i<contador; i++){
+        if(i == 0){
+            texto+="\tnodo"+to_string(i);
+        }else{
+            texto+="-> nodo"+to_string(i);
+        }
+    }
+
+    // Archivo de texto para escribir el .dot
+    ofstream archivo;
+    archivo.open("Grafica.dot",ios::out);
+
+    if(archivo.fail()){
+        cout<<"No se pudo abrir el archivo";
+        exit(1);
+    }
+
+    archivo<<"digraph G {\n"+texto+"\n}";
+    archivo.close();
+    system("dot -Tpng Grafica.dot -o Grafica.png");
 }
